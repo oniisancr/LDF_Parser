@@ -1,16 +1,10 @@
-//
-//  signal_encoding_type.hpp
-//  LIN_Database_Encode_Decode_Tool
-//
-//  Created by Yifan Wang on 6/14/23.
-//
-
 #ifndef signal_encoding_type_hpp
 #define signal_encoding_type_hpp
 
 #include <array>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 enum class LinSigEncodingValueType {
 	LogicalValue,

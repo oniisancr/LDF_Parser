@@ -1,10 +1,3 @@
-//
-//  ldf_parser_helper.hpp
-//  LIN_Database_Encode_Decode_Tool
-//
-//  Created by Yifan Wang on 6/20/23.
-//
-
 #ifndef ldf_parser_helper_hpp
 #define ldf_parser_helper_hpp
 

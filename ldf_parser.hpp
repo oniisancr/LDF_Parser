@@ -1,10 +1,3 @@
-//
-//  ldf_parser.hpp
-//  LIN_Database_Encode_Decode_Tool
-//
-//  Created by Yifan Wang on 6/14/23.
-//
-
 #ifndef ldf_parser_hpp
 #define ldf_parser_hpp
 
@@ -14,6 +7,17 @@
 #include "ldf_parser_dependencies/frame.hpp"
 #include "ldf_parser_dependencies/signal.hpp"
 #include "ldf_parser_dependencies/signal_encoding_type.hpp"
+
+struct ScheduleEntry {
+    std::string name;    // 帧名或命令名
+    double delay;        // 延时时间
+    std::string type;    // "Frame", "DiagCommand", "Unknown"
+};
+
+struct ScheduleTable {
+    std::string name;
+    std::vector<ScheduleEntry> entries;
+};
 
 class LdfParser {
 
@@ -38,6 +42,9 @@ public:
 	// Print LDF info
 	friend std::ostream& operator<<(std::ostream& os, const LdfParser& ldfFile);
 
+	// 新增接口
+	const std::vector<ScheduleTable>& getScheduleTables() const { return scheduleTables; }
+
 private:
 
 	std::optional<std::string> LinProtocolVersion;
@@ -59,6 +66,7 @@ private:
 	void consistencyCheck();
 	void loadAndParseFromFile(std::istream& in);
 
+	std::vector<ScheduleTable> scheduleTables;
 };
 
 #endif /* ldf_parser_hpp */

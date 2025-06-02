@@ -1,10 +1,3 @@
-//
-//  ldf_parser.cpp
-//  LIN_Database_Encode_Decode_Tool
-//
-//  Created by Yifan Wang on 6/14/23.
-//
-
 #include <limits>
 #include <fstream>
 #include <sstream>
@@ -125,6 +118,21 @@ void LdfParser::resetParsedContent() {
 	isEmptyFramesLibrary = true;
 	isEmptySignalsLibrary = true;
 	isEmptySigEncodingTypeLibrary = true;
+}
+// 辅助函数：读取一对大括号内的内容（支持嵌套）
+std::string readBlockWithBraces(std::istream& in) {
+    std::string result;
+    int braceCount = 1;
+    char ch;
+    while (in.get(ch)) {
+        result += ch;
+        if (ch == '{') ++braceCount;
+        else if (ch == '}') {
+            --braceCount;
+            if (braceCount == 0) break;
+        }
+    }
+    return result;
 }
 
 // Actual implementation of parser
@@ -302,6 +310,70 @@ void LdfParser::loadAndParseFromFile(std::istream& in) {
 				}
 				// Get next signal representation
 				singleSigRepresentation = utils::getline(sigRepresentationsStream, ';');
+			}
+		}
+		else if (conditionName == "Schedule_tables") {
+			// 读取整个 Schedule_tables 块（支持嵌套）
+			std::string scheduleBlock = readBlockWithBraces(in);
+			std::stringstream scheduleStream(scheduleBlock);
+
+			std::string scheduleName;
+			while (std::getline(scheduleStream, scheduleName, '{')) {
+				utils::trim(scheduleName);
+				if (scheduleName.empty() || scheduleName.find('}') != std::string::npos) continue;
+				ScheduleTable table;
+				table.name = scheduleName;
+
+				// 读取调度表内容块
+				std::string tableBlock;
+				int innerBrace = 1;
+				char c;
+				while (scheduleStream.get(c)) {
+					if (c == '{') ++innerBrace;
+					else if (c == '}') {
+						--innerBrace;
+						if (innerBrace == 0) break;
+					}
+					tableBlock += c;
+				}
+				std::stringstream tableStream(tableBlock);
+				std::string entry;
+				while (std::getline(tableStream, entry, ';')) {
+					utils::trim(entry);
+					if (entry.empty()) continue;
+					ScheduleEntry se;
+
+					// 解析 delay 时间
+					size_t delayPos = entry.find("delay");
+					if (delayPos != std::string::npos) {
+						// 帧或命令名
+						se.name = entry.substr(0, delayPos);
+						utils::trim(se.name);
+						// 提取延时数值
+						size_t msPos = entry.find("ms", delayPos);
+						if (msPos != std::string::npos) {
+							std::string delayStr = entry.substr(delayPos + 5, msPos - (delayPos + 5));
+							se.delay = std::stod(delayStr);
+						} else {
+							se.delay = 0.0;
+						}
+					} else {
+						se.name = entry;
+						se.delay = 0.0;
+					}
+
+					// 判断类型
+					if (se.name.find("AssignNAD") == 0 || se.name.find("AssignFrameIdRange") == 0) {
+						se.type = "DiagCommand";
+					} else if (se.name.empty()) {
+						se.type = "Unknown";
+					} else {
+						se.type = "Frame";
+					}
+
+					table.entries.push_back(se);
+				}
+				scheduleTables.push_back(table);
 			}
 		}
 	}

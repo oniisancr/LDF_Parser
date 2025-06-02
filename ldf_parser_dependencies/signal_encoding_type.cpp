@@ -1,10 +1,3 @@
-//
-//  signal_encoding_type.cpp
-//  LIN_Database_Encode_Decode_Tool
-//
-//  Created by Yifan Wang on 6/14/23.
-//
-
 #include <limits>
 #include <iomanip>
 #include <iostream>

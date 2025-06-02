@@ -1,15 +1,7 @@
-//
-//  main.cpp
-//  LIN_Database_Encode_Decode_Tool
-//
-//  Created by Yifan Wang on 6/14/23.
-//
-
 #include <bitset>
 #include <iomanip>
 #include <iostream>
 #include "ldf_parser.hpp"
-
 int main()
 {
 	// timing mechanism
@@ -24,7 +16,7 @@ int main()
     
     try {
         // Access the sample ldf
-        std::string projectDir = "/Users/Local/LIN_Payload_Encode_Decode_Tool"; // REPLACE THIS to your project directory
+        std::string projectDir = "C:\\LIN_Payload_Encode_Decode_Tool"; // REPLACE THIS to your project directory
         std::string sampleLdfName = "exampleLIN_2.0_Large.ldf";
         ldfFile.parse(projectDir + "/sample_ldf/" + sampleLdfName);
         
@@ -91,6 +83,15 @@ int main()
 		break;
 		default:
 			break;
+		}
+		
+		const auto& schedules = ldfFile.getScheduleTables();
+		for (const auto& table : schedules) {
+			std::cout << "Schedule: " << table.name << std::endl;
+			for (size_t i = 0; i < table.entries.size(); ++i) {
+				const auto& entry = table.entries[i];
+				std::cout << "  "<<entry.type <<": " << entry.name << ","<<entry.delay<< std::endl;
+			}
 		}
 	}
 	catch (std::invalid_argument& err) {

@@ -1,10 +1,3 @@
-//
-//  frame.hpp
-//  LIN_Database_Encode_Decode_Tool
-//
-//  Created by Yifan Wang on 6/14/23.
-//
-
 #ifndef frame_hpp
 #define frame_hpp
 

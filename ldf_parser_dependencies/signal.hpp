@@ -1,10 +1,3 @@
-//
-//  signal.hpp
-//  LIN_Database_Encode_Decode_Tool
-//
-//  Created by Yifan Wang on 6/14/23.
-//
-
 #ifndef SIGNAL_H
 #define SIGNAL_H
 

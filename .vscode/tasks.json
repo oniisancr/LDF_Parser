@@ -1,0 +1,32 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "cppbuild",
+      "label": "C/C++: g++.exe build active file",
+      "command": "g++.exe",
+      "args": [
+        "-fdiagnostics-color=always",
+        "-g",
+        "main.cpp",
+        "ldf_parser.cpp",
+        "ldf_parser_dependencies/frame.cpp",
+        "ldf_parser_dependencies/signal.cpp",
+        "ldf_parser_dependencies/signal_encoding_type.cpp",
+        "-Ildf_parser_dependencies",
+        "-o",
+        "main.exe"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}

@@ -12,19 +12,6 @@ The parser does not currently support byte-array signals (Initial values in BCD/
 
 ## Build and Run
 
-### On macOS
-
-Open the .xcodeproj project file, hit Build (Cmd+B).
-
-No arguments is required to run. Edit properties in main to use this tool.
-
-
-
-### On Other Operating Systems
-
-You will need to use the source files and create a new project on your own to build. This tool has been tested with Visual Studio 17.6.4 on Windows 11 x64.
-
-
 
 ## Error Handling
 
