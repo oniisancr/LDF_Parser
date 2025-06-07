@@ -11,7 +11,7 @@
 struct ScheduleEntry {
     std::string name;    // 帧名或命令名
     double delay;        // 延时时间
-    std::string type;    // "Frame", "DiagCommand", "Unknown"
+    std::string type;    // "Frame", "Command", "Unknown"
 };
 
 struct ScheduleTable {

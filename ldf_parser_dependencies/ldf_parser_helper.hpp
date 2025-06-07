@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
+#include <cctype>
 
 namespace utils {
 
@@ -11,11 +12,14 @@ namespace utils {
 	// and also removes all occurrences of new line and tab characters
 	inline std::string& trim(std::string& str)
 	{
-		str.erase(str.find_last_not_of(' ') + 1);   //suffixing spaces
-		str.erase(0, str.find_first_not_of(' '));   //prefixing spaces
-		str.erase(remove(str.begin(), str.end(), '\t'), str.end());
-		str.erase(remove(str.begin(), str.end(), '\r'), str.end());
-		str.erase(remove(str.begin(), str.end(), '\n'), str.end());
+		 // 去除前导空白
+        str.erase(str.begin(), std::find_if(str.begin(), str.end(), [](unsigned char ch) {
+            return !std::isspace(ch);
+        }));
+        // 去除尾部空白
+        str.erase(std::find_if(str.rbegin(), str.rend(), [](unsigned char ch) {
+            return !std::isspace(ch);
+        }).base(), str.end());
 		return str;
 	}
 	// A custom getline function that trims the word before returning

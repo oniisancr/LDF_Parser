@@ -16,8 +16,8 @@ int main()
     
     try {
         // Access the sample ldf
-        std::string projectDir = "C:\\LIN_Payload_Encode_Decode_Tool"; // REPLACE THIS to your project directory
-        std::string sampleLdfName = "exampleLIN_2.0_Large.ldf";
+        std::string projectDir = "./"; // REPLACE THIS to your project directory
+        std::string sampleLdfName = "exampleLIN_2.2_Medium_2.ldf";
         ldfFile.parse(projectDir + "/sample_ldf/" + sampleLdfName);
         
         // Show parser results

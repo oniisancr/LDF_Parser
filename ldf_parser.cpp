@@ -7,6 +7,36 @@
 #include "ldf_parser.hpp"
 #include "ldf_parser_dependencies/ldf_parser_helper.hpp"
 
+// 辅助函数：读取一对大括号内的内容（支持嵌套）
+std::string readBlockWithBraces(std::istream& in) {
+    std::string result;
+    int braceCount = 1;
+    char ch;
+    while (in.get(ch)) {
+        result += ch;
+        if (ch == '{') ++braceCount;
+        else if (ch == '}') {
+            --braceCount;
+            if (braceCount == 0) break;
+        }
+    }
+    return result;
+}
+
+// 辅助函数：移除 // 注释
+std::string removeLineComments(const std::string& input) {
+    std::stringstream in(input);
+    std::string output, line;
+    while (std::getline(in, line)) {
+        size_t commentPos = line.find("//");
+        if (commentPos != std::string::npos) {
+            line = line.substr(0, commentPos);
+        }
+        output += line + "\n";
+    }
+    return output;
+}
+
 // Display LDF info
 std::ostream& operator<<(std::ostream& os, const LdfParser& ldfFile) {
 	if (ldfFile.isEmptyLibrary) {
@@ -43,7 +73,12 @@ bool LdfParser::parse(const std::string& filePath) {
 	// Get file path, open the file stream
 	std::ifstream ldfFile(filePath.c_str(), std::ios::binary);
 	if (ldfFile) {
-		loadAndParseFromFile(ldfFile);  // Parse file content
+		// 读取文件内容并去除注释
+        std::stringstream buffer;
+        buffer << ldfFile.rdbuf();
+        std::string content = removeLineComments(buffer.str());
+        std::istringstream cleanStream(content);
+		loadAndParseFromFile(cleanStream);  // Parse file content
 	}
 	else {
 		throw std::invalid_argument("Parse Failed. "
@@ -118,21 +153,6 @@ void LdfParser::resetParsedContent() {
 	isEmptyFramesLibrary = true;
 	isEmptySignalsLibrary = true;
 	isEmptySigEncodingTypeLibrary = true;
-}
-// 辅助函数：读取一对大括号内的内容（支持嵌套）
-std::string readBlockWithBraces(std::istream& in) {
-    std::string result;
-    int braceCount = 1;
-    char ch;
-    while (in.get(ch)) {
-        result += ch;
-        if (ch == '{') ++braceCount;
-        else if (ch == '}') {
-            --braceCount;
-            if (braceCount == 0) break;
-        }
-    }
-    return result;
 }
 
 // Actual implementation of parser
@@ -363,8 +383,11 @@ void LdfParser::loadAndParseFromFile(std::istream& in) {
 					}
 
 					// 判断类型
-					if (se.name.find("AssignNAD") == 0 || se.name.find("AssignFrameIdRange") == 0) {
-						se.type = "DiagCommand";
+					if (se.name.find("{") != std::string::npos || se.name.find("}") != std::string::npos) {
+						se.type = "Command";
+						size_t argPos = se.name.find("{");
+						se.name = se.name.substr(0, argPos);
+						utils::trim(se.name);
 					} else if (se.name.empty()) {
 						se.type = "Unknown";
 					} else {
