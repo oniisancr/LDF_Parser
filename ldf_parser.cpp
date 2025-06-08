@@ -399,6 +399,43 @@ void LdfParser::loadAndParseFromFile(std::istream& in) {
 				scheduleTables.push_back(table);
 			}
 		}
+		else if (conditionName == "Nodes") {
+    std::string nodesBlock = utils::getline(in, '}');
+    std::stringstream nodesStream(nodesBlock);
+    std::string line;
+    while (std::getline(nodesStream, line, ';')) {
+        utils::trim(line);
+        if (line.find("Master:") == 0) {
+            size_t colonPos = line.find(':');
+            if (colonPos != std::string::npos) {
+                std::string afterColon = line.substr(colonPos + 1);
+                utils::trim(afterColon);
+                size_t commaPos = afterColon.find(',');
+                std::string master;
+                if (commaPos != std::string::npos) {
+                    master = afterColon.substr(0, commaPos);
+                } else {
+                    master = afterColon;
+                }
+                utils::trim(master);
+                masterNode = master;
+            }
+        } else if (line.find("Slaves:") == 0) {
+            size_t colonPos = line.find(':');
+            if (colonPos != std::string::npos) {
+                std::string slaves = line.substr(colonPos + 1);
+                utils::trim(slaves);
+                std::stringstream ss(slaves);
+                std::string slave;
+                while (std::getline(ss, slave, ',')) {
+                    utils::trim(slave);
+                    if (!slave.empty())
+                        slaveNodes.push_back(slave);
+                }
+            }
+        }
+    }
+}
 	}
 }
 

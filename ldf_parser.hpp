@@ -42,8 +42,18 @@ public:
 	// Print LDF info
 	friend std::ostream& operator<<(std::ostream& os, const LdfParser& ldfFile);
 
-	// 新增接口
+	// 获取调度表
 	const std::vector<ScheduleTable>& getScheduleTables() const { return scheduleTables; }
+	// 获取主节点名称
+    const std::string& getMasterNode() const { return masterNode; }
+    // 获取从节点名称列表
+    const std::vector<std::string>& getSlaveNodes() const { return slaveNodes; }
+	// 获取所有信号
+    const std::map<std::string, Signal>& getSignals() const { return signalsLibrary; }
+    // 获取所有帧
+    const std::map<int, Frame>& getFrames() const { return framesLibrary; }
+    // 获取所有信号编码类型
+    const std::map<std::string, SignalEncodingType>& getSignalEncodingTypes() const { return sigEncodingTypeLibrary; }
 
 private:
 
@@ -66,6 +76,8 @@ private:
 	void consistencyCheck();
 	void loadAndParseFromFile(std::istream& in);
 
+	std::string masterNode;
+    std::vector<std::string> slaveNodes;
 	std::vector<ScheduleTable> scheduleTables;
 };
 

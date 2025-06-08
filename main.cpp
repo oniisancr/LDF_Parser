@@ -5,28 +5,67 @@
 int main()
 {
 	// timing mechanism
-    clock_t parserBeforeOperation, parserAfterOperation;
+	clock_t parserBeforeOperation, parserAfterOperation;
 	clock_t totalBeforeOperation, totalAfterOperation;
-    // mark the time before we start
-    parserBeforeOperation = clock(); totalBeforeOperation = clock();
+	// mark the time before we start
+	parserBeforeOperation = clock();
+	totalBeforeOperation = clock();
 
 	int operationChoice = 1;
 	// Create a class to store LDF info
 	LdfParser ldfFile;
-    
-    try {
-        // Access the sample ldf
-        std::string projectDir = "./"; // REPLACE THIS to your project directory
-        std::string sampleLdfName = "exampleLIN_2.2_Medium_2.ldf";
-        ldfFile.parse(projectDir + "/sample_ldf/" + sampleLdfName);
-        
-        // Show parser results
-		std::cout << ldfFile;
-        
-        // mark the time once we are done
-        parserAfterOperation = clock();
-        
+
+	try
+	{
+		// Access the sample ldf
+		std::string projectDir = "./"; // REPLACE THIS to your project directory
+		std::string sampleLdfName = "exampleLIN_2.2_Medium_2.ldf";
+		ldfFile.parse(projectDir + "/sample_ldf/" + sampleLdfName);
+
+		// Show parser results
+		// std::cout << ldfFile;
+
+		// mark the time once we are done
+		parserAfterOperation = clock();
+
+		const auto &schedules = ldfFile.getScheduleTables();
+		for (const auto &table : schedules)
+		{
+			std::cout << "Schedule: " << table.name << std::endl;
+			for (size_t i = 0; i < table.entries.size(); ++i)
+			{
+				const auto &entry = table.entries[i];
+				std::cout << "  " << entry.type << ": " << entry.name << "," << entry.delay << std::endl;
+			}
+		}
+		// Show parser results
+		std::cout << "Master Node: " << ldfFile.getMasterNode() << std::endl;
+		std::cout << "Slave Nodes: ";
+		for (const auto &slave : ldfFile.getSlaveNodes())
+		{
+			std::cout << slave << " ";
+		}
+		std::cout << std::endl;
+
+		std::cout << "\nFrames:" << std::endl;
+		for (const auto &[id, frame] : ldfFile.getFrames())
+		{
+			std::cout << "  ID: " << id << ", Name: " << frame.getName() << std::endl;
+		}
+
+		std::cout << "\nSignals:" << std::endl;
+		for (const auto &[name, sig] : ldfFile.getSignals())
+		{
+			std::cout << "  Name: " << name << std::endl;
+		}
+
+		std::cout << "\nSignal Encoding Types:" << std::endl;
+		for (const auto &[name, type] : ldfFile.getSignalEncodingTypes())
+		{
+			std::cout << "  Name: " << name << std::endl;
+		}
 		// MARK: - Function call choices
+		/*
 		switch (operationChoice) {
 		case 1:
 		{
@@ -64,7 +103,7 @@ int main()
 			signalsToEncode.push_back(std::make_pair("Derat_Shift", 0));
 			signalsToEncode.push_back(std::make_pair("MM_Request", 1));
 			signalsToEncode.push_back(std::make_pair("Reg_Blind", 0));
-            int encodedfrmSize = ldfFile.encode(frameId, signalsToEncode, encodedPayload);
+			int encodedfrmSize = ldfFile.encode(frameId, signalsToEncode, encodedPayload);
 			// Print results
 			if (encodedfrmSize != -1) {
 				std::cout << "-----------------------------------------------" << std::endl;
@@ -84,29 +123,23 @@ int main()
 		default:
 			break;
 		}
-		
-		const auto& schedules = ldfFile.getScheduleTables();
-		for (const auto& table : schedules) {
-			std::cout << "Schedule: " << table.name << std::endl;
-			for (size_t i = 0; i < table.entries.size(); ++i) {
-				const auto& entry = table.entries[i];
-				std::cout << "  "<<entry.type <<": " << entry.name << ","<<entry.delay<< std::endl;
-			}
-		}
+
+		//*/
 	}
-	catch (std::invalid_argument& err) {
+	catch (std::invalid_argument &err)
+	{
 		std::cout << "[Exception catched] " << err.what() << '\n';
 		return -1;
 	}
-    
-    // mark the time once we are done
-    totalAfterOperation = clock();
-    
+
+	// mark the time once we are done
+	totalAfterOperation = clock();
+
 	// print statistics
 	double parserOperationTime = double(parserAfterOperation - parserBeforeOperation) / CLOCKS_PER_SEC;
-    double totalOperationTime = double(totalAfterOperation - totalBeforeOperation) / CLOCKS_PER_SEC;
+	double totalOperationTime = double(totalAfterOperation - totalBeforeOperation) / CLOCKS_PER_SEC;
 	std::cout << "\nParser operation time:\t" << parserOperationTime << std::endl;
-    std::cout << "Total operation time:\t" << totalOperationTime << std::endl;
+	std::cout << "Total operation time:\t" << totalOperationTime << std::endl;
 	std::cout << "----------------------END----------------------" << std::endl;
 	return 0;
 }
