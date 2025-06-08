@@ -20,7 +20,7 @@ class SignalEncodingType {
 public:
 
 	// Getters
-	std::string getName() const { return name; }
+	const std::string getName() const { return name; }
 	std::string getUnitFromRawValue(int64_t rawValue) const { return std::get<1>(getTypeInfoFromRawValue(rawValue)); }
 	double getOffsetFromPhysicalValue(double physicalValue) const { return std::get<0>(getTypeInfoFromPhysicalValue(physicalValue))[3]; }
 	double getFactorFromPhysicalValue(double physicalValue) const { return std::get<0>(getTypeInfoFromPhysicalValue(physicalValue))[2]; }

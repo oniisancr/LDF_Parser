@@ -17,7 +17,9 @@ public:
 	int getstartBit() const { return startBit; }
 	int getInitValue() const { return initValue; }
 	int getSignalSize() const { return signalSize; }
-	SignalEncodingType* getEncodingType() { return encodingType; }
+	SignalEncodingType* getEncodingType() const { return encodingType; }
+	const std::string getPublisher() const { return publisher; }
+	const std::vector<std::string> getSubscribers() const { return subscribers; }
 	// Setters
 	void setName(const std::string& name) { this->name = name; }
 	void setStartBit(const int& startBit) { this->startBit = startBit; }

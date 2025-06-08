@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <fstream>
 #include <iostream>
+#include <set>
 #include "frame.hpp"
 
 std::ostream& operator<<(std::ostream& os, const Frame& frm) {
@@ -34,4 +35,16 @@ std::ostream& operator<<(std::ostream& os, const Frame& frm) {
 		std::cout << "\tNo signals";
 	}
 	return os;
+}
+
+std::vector<std::string> Frame::getSubscribers() const {
+	std::set<std::string> uniqueSubs;
+	for (const auto* sig : connectedSignals) {
+		if (sig) {
+			for (const auto& sub : sig->getSubscribers()) {
+				uniqueSubs.insert(sub);
+			}
+		}
+	}
+	return std::vector<std::string>(uniqueSubs.begin(), uniqueSubs.end());
 }

@@ -51,6 +51,9 @@ int main()
 		for (const auto &[id, frame] : ldfFile.getFrames())
 		{
 			std::cout << "  ID: " << id << ", Name: " << frame.getName() << std::endl;
+			for(auto &sub: frame.getSubscribers()) {
+			std::cout << "    Subscriber: " << sub << std::endl;
+			}
 		}
 
 		std::cout << "\nSignals:" << std::endl;

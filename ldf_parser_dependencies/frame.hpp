@@ -13,7 +13,9 @@ public:
 	// Getters
 	int getId() const { return id; }
 	int getDlc() const { return messageSize; }
+	const std::string getPublisher() const { return publisher; }
 	std::string getName() const { return name; }
+    int getLength() const { return messageSize; }
 	std::vector<Signal*> getConnectedSignals() const { return connectedSignals; }
 	// Setters
 	void setId(const int& id) { this->id = id; }
@@ -23,7 +25,9 @@ public:
 	void addSignalInfo(Signal* sig) { this->connectedSignals.push_back(sig); }
 	// Overloads
 	friend std::ostream& operator<<(std::ostream& os, const Frame& frm);
-
+	
+	// 获取所有信号的所有订阅者（去重）
+    std::vector<std::string> getSubscribers() const;
 private:
 
 	int id{};
