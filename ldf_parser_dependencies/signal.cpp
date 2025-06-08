@@ -46,37 +46,67 @@ std::ostream& operator<<(std::ostream& os, const Signal& sig) {
 }
 
 std::istream& operator>>(std::istream& in, Signal& sig) {
-	// Parse signal info
-	std::string sigName = utils::getline(in, ':');
-	int sigSize = utils::stoi(utils::getline(in, ','));
-	// Read initial value and check for byte array signals
-	std::string rawString = utils::getline(in, ',');
-	char lastCharOnInitValue = rawString.front();
-	if (lastCharOnInitValue == '{') {
-		throw std::invalid_argument("Parse Failed. Parser does not support parsing byte-array signals");
-	}
-	int initValue = utils::stoi(rawString);
-	std::string publisher = utils::getline(in, ',');
-	std::string subscriber = utils::getline(in, ',');
-	std::vector<std::string> subscribers;
-	while (subscriber != "") {
-		// Remove semi colon if there exists one
-		char lastCharOfSubscriber = subscriber.back();
-		if ((lastCharOfSubscriber == ';') && (!subscriber.empty())) {
-			// Remove trailling colon and white spaces
-			subscriber.pop_back();
-			utils::trim(subscriber);
+    // Parse signal info
+    std::string sigName = utils::getline(in, ':');
+    int sigSize = utils::stoi(utils::getline(in, ','));
+    // Read initial value and check for byte array signals
+    std::string rawString = "";
+    int64_t initValue = 0;
+    std::vector<int> initBytes; // 用于存储全部初始字节
+	// 跳过空白
+    while (in && std::isspace(in.peek())) in.get();
+    if (in.peek() == '{') {
+		in.get(); // 跳过 '{'
+		std::string initByteBlock = utils::readBlockWithBraces(in); // 读取大括号内的内容
+		if (in.peek() == ',')
+		{
+			in.get(); // 跳过 ','
 		}
-		subscribers.push_back(subscriber);
-		subscriber = utils::getline(in, ',');
-	}
-	// Store signal info
-	sig.setName(sigName);
-	sig.setSignalSize(sigSize);
-	sig.setInitValue(initValue);
-	sig.setPublisher(publisher);
-	sig.setSubscribers(subscribers);
-	return in;
+		if (initByteBlock.empty()) {
+			throw std::invalid_argument("Parse Failed. Initial byte block is empty.");
+		}
+		// 去除前后空格
+		utils::trim(initByteBlock); // 去除前后空格
+		if(initByteBlock.back() == '}')
+		{
+			initByteBlock.pop_back(); // 去除末尾的 '}'
+		}
+        std::stringstream ss(initByteBlock);
+        std::string byteStr;
+        while (std::getline(ss, byteStr, ',')) {
+            utils::trim(byteStr);
+            if (!byteStr.empty())
+                initBytes.push_back(std::stoi(byteStr));
+        }
+        // 按照小端方式将initBytes合成为initValue
+        for (size_t i = 0; i < initBytes.size(); ++i) {
+            initValue |= (initBytes[i] & 0xFF) << (8 * i);
+        }
+    } else {
+		rawString = utils::getline(in, ',');
+        initValue = utils::stoi(rawString);
+    }
+    std::string publisher = utils::getline(in, ',');
+    std::string subscriber = utils::getline(in, ',');
+    std::vector<std::string> subscribers;
+    while (subscriber != "") {
+        // Remove semi colon if there exists one
+        char lastCharOfSubscriber = subscriber.back();
+        if ((lastCharOfSubscriber == ';') && (!subscriber.empty())) {
+            // Remove trailling colon and white spaces
+            subscriber.pop_back();
+            utils::trim(subscriber);
+        }
+        subscribers.push_back(subscriber);
+        subscriber = utils::getline(in, ',');
+    }
+    // Store signal info
+    sig.setName(sigName);
+    sig.setSignalSize(sigSize);
+    sig.setInitValue(initValue);
+    sig.setPublisher(publisher);
+    sig.setSubscribers(subscribers);
+    return in;
 }
 
 std::tuple<double, std::string, LinSigEncodingValueType>

@@ -7,26 +7,7 @@
 #include "ldf_parser.hpp"
 #include "ldf_parser_dependencies/ldf_parser_helper.hpp"
 
-// 辅助函数：读取一对大括号内的内容（支持嵌套）
-std::string readBlockWithBraces(std::istream &in)
-{
-	std::string result;
-	int braceCount = 1;
-	char ch;
-	while (in.get(ch))
-	{
-		result += ch;
-		if (ch == '{')
-			++braceCount;
-		else if (ch == '}')
-		{
-			--braceCount;
-			if (braceCount == 0)
-				break;
-		}
-	}
-	return result;
-}
+
 
 // 辅助函数：移除 // 注释
 std::string removeLineComments(const std::string &input)
@@ -241,7 +222,11 @@ void LdfParser::loadAndParseFromFile(std::istream &in)
 		else if (conditionName == "Signals")
 		{
 			// Get all signal representations
-			std::string allSignals = utils::getline(in, '}');
+			std::string allSignals = utils::readBlockWithBraces(in);
+			if(allSignals.back() == '}')
+			{
+				allSignals.pop_back(); // 去除末尾的 '}'
+			}
 			std::stringstream allSignalsStream(allSignals);
 			// Loop through each signal representation
 			std::string singleSignal = utils::getline(allSignalsStream, ';');
@@ -371,7 +356,7 @@ void LdfParser::loadAndParseFromFile(std::istream &in)
 		else if (conditionName == "Schedule_tables")
 		{
 			// 读取整个 Schedule_tables 块（支持嵌套）
-			std::string scheduleBlock = readBlockWithBraces(in);
+			std::string scheduleBlock = utils::readBlockWithBraces(in);
 			std::stringstream scheduleStream(scheduleBlock);
 
 			std::string scheduleName;

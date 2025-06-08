@@ -7,7 +7,26 @@
 #include <cctype>
 
 namespace utils {
-
+	// 辅助函数：读取一对大括号内的内容（支持嵌套）
+	inline std::string readBlockWithBraces(std::istream &in)
+	{
+		std::string result;
+		int braceCount = 1;
+		char ch;
+		while (in.get(ch))
+		{
+			result += ch;
+			if (ch == '{')
+				++braceCount;
+			else if (ch == '}')
+			{
+				--braceCount;
+				if (braceCount == 0)
+					break;
+			}
+		}
+		return result;
+	}
 	// A special version of trim function that removes any leading and trailling white spaces
 	// and also removes all occurrences of new line and tab characters
 	inline std::string& trim(std::string& str)

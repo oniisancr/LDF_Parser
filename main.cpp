@@ -19,7 +19,7 @@ int main()
 	{
 		// Access the sample ldf
 		std::string projectDir = "./"; // REPLACE THIS to your project directory
-		std::string sampleLdfName = "exampleLIN_2.2_Medium_2.ldf";
+		std::string sampleLdfName = "VIUFL_LIN6.ldf";
 		ldfFile.parse(projectDir + "/sample_ldf/" + sampleLdfName);
 
 		// Show parser results
