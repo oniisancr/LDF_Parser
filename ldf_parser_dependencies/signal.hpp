@@ -15,13 +15,13 @@ public:
 	// Getters
 	std::string getName() const { return name; }
 	int getstartBit() const { return startBit; }
-	int64_t getInitValue() const { return initValue; }
+	int getInitValue() const { return initValue; }
 	int getSignalSize() const { return signalSize; }
 	SignalEncodingType* getEncodingType() { return encodingType; }
 	// Setters
 	void setName(const std::string& name) { this->name = name; }
 	void setStartBit(const int& startBit) { this->startBit = startBit; }
-	void setInitValue(const int64_t& initValue) { this->initValue = initValue; }
+	void setInitValue(const int& initValue) { this->initValue = initValue; }
 	void setSignalSize(const int& signalSize) { this->signalSize = signalSize; }
 	void setPublisher(const std::string& publisher) { this->publisher = publisher; }
 	void setEncodingType(SignalEncodingType* encodingType) { this->encodingType = encodingType; }
@@ -37,7 +37,7 @@ public:
 private:
 
 	int startBit = -1; // Initialize with invalid value
-	int64_t initValue{};
+	int initValue{};
 	int signalSize{};
 	std::string name{};
 	std::string publisher{};

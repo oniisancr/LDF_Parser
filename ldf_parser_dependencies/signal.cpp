@@ -51,11 +51,15 @@ std::istream& operator>>(std::istream& in, Signal& sig) {
     int sigSize = utils::stoi(utils::getline(in, ','));
     // Read initial value and check for byte array signals
     std::string rawString = "";
-    int64_t initValue = 0;
+    int initValue = 0;
     std::vector<int> initBytes; // 用于存储全部初始字节
 	// 跳过空白
     while (in && std::isspace(in.peek())) in.get();
     if (in.peek() == '{') {
+		std::cerr << "Warning: Initial "<<sigName<<" value is a byte array. "
+			<< "This parser does not support parsing byte array signals. "
+			<< "It will be ignored." << std::endl;
+		// try to read the byte array
 		in.get(); // 跳过 '{'
 		std::string initByteBlock = utils::readBlockWithBraces(in); // 读取大括号内的内容
 		if (in.peek() == ',')
@@ -76,12 +80,12 @@ std::istream& operator>>(std::istream& in, Signal& sig) {
         while (std::getline(ss, byteStr, ',')) {
             utils::trim(byteStr);
             if (!byteStr.empty())
-                initBytes.push_back(std::stoi(byteStr));
+                initBytes.push_back(std::stoi(byteStr, nullptr, 0));
         }
         // 按照小端方式将initBytes合成为initValue
-        for (size_t i = 0; i < initBytes.size(); ++i) {
-            initValue |= (initBytes[i] & 0xFF) << (8 * i);
-        }
+        // for (size_t i = 0; i < initBytes.size(); ++i) {
+        //     initValue |= (initBytes[i] & 0xFF) << (8 * i);
+        // }
     } else {
 		rawString = utils::getline(in, ',');
         initValue = utils::stoi(rawString);

@@ -72,8 +72,19 @@ std::istream& operator>>(std::istream& in, SignalEncodingType& sigEncodingType) 
 				LinSigEncodingValueType::LogicalValue));
 		}
 		else if (valueTypeName == "ascii_value" || valueTypeName == "bcd_value") {
-			std::cerr << "Parser does not support parsing encoding type of byte-array signals"
-				<< "It will be ignored." << std::endl;
+			// std::cerr << "Parser does not support parsing encoding type of byte-array signals"
+			// 	<< "It will be ignored." << std::endl;
+			int min = 0;
+			int max = std::numeric_limits<int>::max();
+			double factor = 0;
+			double offset = 0;
+			std::string unit = "";
+			
+			// Store physical value info
+			std::array<double, 4> tmpArray = { (double)min, (double)max, factor, offset };
+			sigEncodingType.encodingTypes.push_back(std::make_tuple(tmpArray,
+				unit,
+				LinSigEncodingValueType::NotSet));
 		}
 		// Get next value type
 		singleValueType = utils::getline(in, ';');
